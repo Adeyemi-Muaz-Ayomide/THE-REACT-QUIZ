@@ -6,7 +6,7 @@ import Error from "./Error";
 import Welcome from "./Welcome";
 import Question from "./Question";
 
-const initialState = { questions: [], status: "loading" };
+const initialState = { questions: [], status: "loading", index: 0 };
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -16,13 +16,20 @@ const reducer = (state, action) => {
       return { ...state, status: "error" };
     case "QuestionStart":
       return { ...state, status: "active" };
+    case "QuestionNext":
+      return { ...state, index: state.index + 1 };
+    case 'SubmitQuiz':
+      return { ...state, status : 'finished' }
 
     default:
       break;
   }
 };
 const App = () => {
-  const [{ questions, status }, dispatch] = useReducer(reducer, initialState);
+  const [{ questions, status, index }, dispatch] = useReducer(
+    reducer,
+    initialState
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -49,10 +56,16 @@ const App = () => {
       <Main>
         {loading && <Loader />}
         {status === "error" && <Error />}
-        {status === "ready" && (
+        {status === "ready" || status === "finished" ? (
           <Welcome questions={questions} dispatch={dispatch} />
+        ) : null}
+        {status === "active" && (
+          <Question
+            questions={questions[index]}
+            dispatch={dispatch}
+            index={index}
+          />
         )}
-        {status === "active" && <Question />}
       </Main>
 
       {/* <div>
