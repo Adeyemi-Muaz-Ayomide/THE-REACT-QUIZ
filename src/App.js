@@ -4,6 +4,7 @@ import Main from "./Main";
 import Loader from "./Loader";
 import Error from "./Error";
 import Welcome from "./Welcome";
+import Question from "./Question";
 
 const initialState = { questions: [], status: "loading" };
 
@@ -13,6 +14,8 @@ const reducer = (state, action) => {
       return { ...state, questions: action.payload, status: "ready" };
     case "dataFailed":
       return { ...state, status: "error" };
+    case "QuestionStart":
+      return { ...state, status: "active" };
 
     default:
       break;
@@ -20,7 +23,6 @@ const reducer = (state, action) => {
 };
 const App = () => {
   const [{ questions, status }, dispatch] = useReducer(reducer, initialState);
-  // const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -47,7 +49,10 @@ const App = () => {
       <Main>
         {loading && <Loader />}
         {status === "error" && <Error />}
-        {status === "ready" && <Welcome questions={questions} />}
+        {status === "ready" && (
+          <Welcome questions={questions} dispatch={dispatch} />
+        )}
+        {status === "active" && <Question />}
       </Main>
 
       {/* <div>
