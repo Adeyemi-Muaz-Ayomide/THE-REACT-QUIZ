@@ -6,7 +6,13 @@ import Error from "./Error";
 import Welcome from "./Welcome";
 import Question from "./Question";
 
-const initialState = { questions: [], status: "loading", index: 0 };
+const initialState = {
+  questions: [],
+  status: "loading",
+  index: 0,
+  answer: null,
+  score: 0,
+};
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -17,16 +23,28 @@ const reducer = (state, action) => {
     case "QuestionStart":
       return { ...state, status: "active" };
     case "QuestionNext":
-      return { ...state, index: state.index + 1 };
-    case 'SubmitQuiz':
-      return { ...state, status : 'finished' }
+      return { ...state, index: state.index + 1, answer: null };
+    case "newAnswer":
+      const question = state.questions.at(state.index);
+      return {
+        ...state,
+        answer: action.payload,
+        score:
+          action.payload === question.correct_answer
+            ? state.score + question.score
+            : state.score,
+      };
+    case "SubmitQuiz":
+      return { ...state, status: "finished" };
+    case "restart":
+      return { ...initialState, questions: state.questions, status: "ready" };
 
     default:
       break;
   }
 };
 const App = () => {
-  const [{ questions, status, index }, dispatch] = useReducer(
+  const [{ questions, status, index, answer, score }, dispatch] = useReducer(
     reducer,
     initialState
   );
@@ -56,14 +74,17 @@ const App = () => {
       <Main>
         {loading && <Loader />}
         {status === "error" && <Error />}
-        {status === "ready" || status === "finished" ? (
-          <Welcome questions={questions} dispatch={dispatch} />
+        {status === "ready" ? (
+          <Welcome questionLength={questions.length} dispatch={dispatch} />
         ) : null}
         {status === "active" && (
           <Question
             questions={questions[index]}
+            questionLength={questions.length}
             dispatch={dispatch}
             index={index}
+            answer={answer}
+            score={score}
           />
         )}
       </Main>

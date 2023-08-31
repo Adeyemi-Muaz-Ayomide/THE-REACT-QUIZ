@@ -1,12 +1,15 @@
-const SubmitMsg = () => {
+const SubmitMsg = ({ dispatch, score }) => {
   return (
     <div>
       <h3>Thank you for taking the quiz!</h3>
+      <p className="result">
+        You scored {score} out of 20
+      </p>
       <button
         className="btn btn-ui"
-        onClick={() => console.log("Thank you message clicked")}
+        onClick={() => dispatch({ type: "restart" })}
       >
-        Return to Home
+        Restart quiz
       </button>
     </div>
   );

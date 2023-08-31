@@ -1,55 +1,34 @@
 import SubmitMsg from "./SubmitMsg";
 
-const Question = ({ questions, dispatch, index }) => {
+const Question = ({ questions, dispatch, index, questionLength, answer , score}) => {
+  const hasAnswered = answer !== null;
   if (!questions || index >= questions.length) {
-    <SubmitMsg />;
+    return <SubmitMsg dispatch={dispatch} score={score} />;
   }
-  // if (index === questions.length - 1) {
-  //     // Display the Submit button on the last question
-  //     return (
-  //         <div>
-  //             <h4>{questions[index].question}</h4>
-  //             <div className="options">
-  //                 {questions[index].options.map((option, optionIndex) => (
-  //                     <button className="btn btn-ui" key={optionIndex}>
-  //                         {option}
-  //                     </button>
-  //                 ))}
-  //             </div>
-  //             <button
-  //                 className="btn btn-ui"
-  //                 onClick={() => {
-  //                     dispatch({ type: "SubmitQuiz" });
-  //                     setSubmitted(true);
-  //                 }}
-  //             >
-  //                 Submit
-  //             </button>
-  //         </div>
-  //     );
-  // }
 
   const { question, correct_answer, incorrect_answers } = questions;
   const allOptions = [correct_answer, ...incorrect_answers];
   console.log(questions);
 
-  if (!questions || index >= questions.length) {
-    return <button>Submit</button>;
-  }
-
-  //   if (questions.length === 20) {
-  //     // return <button className="btn btn-ui">Submit</button>;
-  //     return `Thank you for taking the quiz!`
-  //   }
-
   return (
     <div>
+      <h3>Question {`${index + 1} / ${questionLength}`}</h3>
       <h4>{question}</h4>
-      <h3>{}</h3>
 
       <div className="options">
         {allOptions.map((option, index) => (
-          <button className="btn btn-ui" key={index}>
+          <button
+            className={`btn btn-ui ${index === answer ? "answer" : ""} ${
+              hasAnswered
+                ? index === allOptions.correct_answer
+                  ? "correct"
+                  : "wrong"
+                : ""
+            }  `}
+            key={index}
+            disabled={hasAnswered}
+            onClick={() => dispatch({ type: "newAnswer", payload: index })}  
+          >
             {option}
           </button>
         ))}
