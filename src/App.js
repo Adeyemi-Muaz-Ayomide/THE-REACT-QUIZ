@@ -1,10 +1,26 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import Header from './Header'
 import Main from './Main';
 import Loader from './Loader';
 import Error from './Error';
+
+const initialState = { questions: [], status: 'ready' };
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'dataReceived':
+     return {...state, questions: action.payload};
+    case 'reset':
+      return initialState;
+  
+    default:
+      break;
+  }
+}
 const App = () => {
-  const [data, setData] = useState(null);
+
+  const [state, dispatch] = useReducer(reducer, initialState);
+ // const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -13,7 +29,7 @@ const App = () => {
       try {
         const response = await fetch('https://opentdb.com/api.php?amount=20&category=9&difficulty=medium');
         const jsonData = await response.json();
-        setData(jsonData);
+        dispatch({ type: 'dataReceived', payload: jsonData.results });
         setLoading(false);
       } catch (error) {
         setError(error);
