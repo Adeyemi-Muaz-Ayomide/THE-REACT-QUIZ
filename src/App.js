@@ -17,30 +17,50 @@ const initialState = {
 const reducer = (state, action) => {
   switch (action.type) {
     case "dataReceived":
-      return { ...state, questions: action.payload, status: "ready" };
+      return {
+        ...state,
+        questions: action.payload,
+        status: "ready"
+      };
     case "dataFailed":
-      return { ...state, status: "error" };
+      return {
+        ...state,
+        status: "error"
+      };
     case "QuestionStart":
-      return { ...state, status: "active" };
+      return {
+        ...state,
+        status: "active"
+      };
     case "QuestionNext":
-      return { ...state, index: state.index + 1, answer: null };
+      return {
+        ...state,
+        index: state.index + 1,
+        answer: null
+      };
     case "newAnswer":
-      const question = state.questions.at(state.index);
+      const selectedOption = state.questions[state.index].incorrect_answers[action.payload];
+      const correctOption = state.questions[state.index].correct_answer;
+      const isCorrect = selectedOption === correctOption;
+
       return {
         ...state,
         answer: action.payload,
-        score:
-          action.payload === question.correct_answer
-            ? state.score + question.score
-            : state.score,
+        score: isCorrect ? state.score + 1 : state.score
       };
     case "SubmitQuiz":
-      return { ...state, status: "finished" };
+      return {
+        ...state,
+        status: "finished"
+      };
     case "restart":
-      return { ...initialState, questions: state.questions, status: "ready" };
-
+      return {
+        ...initialState,
+        questions: state.questions,
+        status: "ready"
+      };
     default:
-      break;
+      return state;
   }
 };
 const App = () => {
@@ -88,16 +108,6 @@ const App = () => {
           />
         )}
       </Main>
-
-      {/* <div>
-        {data && (
-          <ul>
-            {data.map((item) => (
-              <li key={item.id}>{item.name}</li>
-            ))}
-          </ul>
-        )}
-      </div> */}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-const SubmitMsg = ({ dispatch, score }) => {
+const FinishScreen = ({ dispatch, score }) => {
   return (
     <div>
       <h3>Thank you for taking the quiz!</h3>
@@ -15,4 +15,4 @@ const SubmitMsg = ({ dispatch, score }) => {
   );
 };
 
-export default SubmitMsg;
+export default FinishScreen;

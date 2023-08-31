@@ -1,14 +1,26 @@
-import SubmitMsg from "./SubmitMsg";
+import FinishScreen from "./FinishScreen";
 
-const Question = ({ questions, dispatch, index, questionLength, answer , score}) => {
+const Question = ({
+  questions,
+  dispatch,
+  index,
+  questionLength,
+  answer,
+  score,
+}) => {
   const hasAnswered = answer !== null;
+
+  console.log(questions)
+
   if (!questions || index >= questions.length) {
-    return <SubmitMsg dispatch={dispatch} score={score} />;
+    return <FinishScreen dispatch={dispatch} score={score} />;
   }
 
   const { question, correct_answer, incorrect_answers } = questions;
   const allOptions = [correct_answer, ...incorrect_answers];
-  console.log(questions);
+
+  // Shuffle the options
+  const shuffledOptions = allOptions.slice().sort(() => Math.random() - 0.5);
 
   return (
     <div>
@@ -16,18 +28,23 @@ const Question = ({ questions, dispatch, index, questionLength, answer , score})
       <h4>{question}</h4>
 
       <div className="options">
-        {allOptions.map((option, index) => (
+        {shuffledOptions.map((option, optionIndex) => (
           <button
-            className={`btn btn-ui ${index === answer ? "answer" : ""} ${
+            className={`btn btn-option ${
+              optionIndex === answer ? "answer" : ""
+            } ${
               hasAnswered
-                ? index === allOptions.correct_answer
+                ? option === correct_answer
                   ? "correct"
                   : "wrong"
                 : ""
-            }  `}
-            key={index}
+            }`}
+            key={optionIndex}
             disabled={hasAnswered}
-            onClick={() => dispatch({ type: "newAnswer", payload: index })}  
+            onClick={() =>
+              dispatch({ type: "newAnswer", payload: optionIndex })
+
+            }
           >
             {option}
           </button>
@@ -39,10 +56,6 @@ const Question = ({ questions, dispatch, index, questionLength, answer , score})
       >
         Next
       </button>
-      {/* <h4>
-        This is a multi-choice question with {questions.correct_answer} as the
-        correct answer. It has {questions.type}
-      </h4> */}
     </div>
   );
 };
