@@ -1,4 +1,4 @@
-const Welcome = ({ questionLength, dispatch }) => {
+const WelcomeScreen = ({ questionLength, dispatch }) => {
   return (
     <div className="start">
       <h2>Welcome to the React Quiz!</h2>
@@ -13,4 +13,4 @@ const Welcome = ({ questionLength, dispatch }) => {
   );
 };
 
-export default Welcome;
+export default WelcomeScreen;

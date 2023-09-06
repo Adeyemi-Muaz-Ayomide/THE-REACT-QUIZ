@@ -1,35 +1,35 @@
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 
 function DateCounter() {
   const [count, setCount] = useState(0);
   const [step, setStep] = useState(1);
 
-  // This mutates the date object.
-  const date = new Date("june 21 2027");
-  date.setDate(date.getDate() + count);
+  const date = useMemo(() => {
+    const d = new Date("june 21 2027");
+    d.setDate(d.getDate() + count);
+    return d;
+  }, [count]);
 
-  const dec = function () {
-    // setCount((count) => count - 1);
+  const dec = useCallback(() => {
     setCount((count) => count - step);
-  };
+  }, [step]);
 
-  const inc = function () {
-    // setCount((count) => count + 1);
+  const inc = useCallback(() => {
     setCount((count) => count + step);
-  };
+  }, [step]);
 
-  const defineCount = function (e) {
+  const defineCount = useCallback((e) => {
     setCount(Number(e.target.value));
-  };
+  }, []);
 
-  const defineStep = function (e) {
+  const defineStep = useCallback((e) => {
     setStep(Number(e.target.value));
-  };
+  }, []);
 
-  const reset = function () {
+  const reset = useCallback(() => {
     setCount(0);
     setStep(1);
-  };
+  }, []);
 
   return (
     <div className="counter">

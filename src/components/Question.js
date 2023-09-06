@@ -7,20 +7,34 @@ const Question = ({
   questionLength,
   answer,
   score,
+  // hasAnswered
 }) => {
   const hasAnswered = answer !== null;
 
-  console.log(questions)
+  console.log(questions);
 
   if (!questions || index >= questions.length) {
     return <FinishScreen dispatch={dispatch} score={score} />;
   }
 
+
   const { question, correct_answer, incorrect_answers } = questions;
   const allOptions = [correct_answer, ...incorrect_answers];
 
-  // Shuffle the options
-  const shuffledOptions = allOptions.slice().sort(() => Math.random() - 0.5);
+  const shuffledOptions = allOptions
+    .slice()
+    .sort(() => Math.random() - 0.5);
+
+  const handleAnswer = (optionIndex) => {
+    if (!hasAnswered) {
+      if (optionIndex === answer) {
+        dispatch({ type: "newAnswer", payload: optionIndex });
+        dispatch({ type: "incrementScore" });
+      } else {
+        dispatch({ type: "newAnswer", payload: optionIndex });
+      }
+    }
+  };
 
   return (
     <div>
@@ -30,20 +44,19 @@ const Question = ({
       <div className="options">
         {shuffledOptions.map((option, optionIndex) => (
           <button
-            className={`btn btn-option ${
-              optionIndex === answer ? "answer" : ""
-            } ${
-              hasAnswered
+            className={`btn btn-option ${optionIndex === answer ? "answer" : ""
+              } ${hasAnswered
                 ? option === correct_answer
                   ? "correct"
                   : "wrong"
                 : ""
-            }`}
+              }`}
             key={optionIndex}
             disabled={hasAnswered}
             onClick={() =>
-              dispatch({ type: "newAnswer", payload: optionIndex })
-
+              handleAnswer(optionIndex)
+              // hasAnswered ? null : handleAnswer(optionIndex)
+              // dispatch({ type: "newAnswer", payload: optionIndex })
             }
           >
             {option}
