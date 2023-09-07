@@ -3,15 +3,15 @@ import {
   useContext,
   useEffect,
   useReducer,
-  useState,
 } from "react";
 
 const QuizContext = createContext();
 
 const SECS_PER_QUESTION = 30;
-// 'loading', 'error', 'ready', 'active', 'finished'
+
 const initialState = {
   questions: [],
+  // 'loading', 'error', 'ready', 'active', 'finished'
   status: "loading",
   index: 0,
   answer: null,
@@ -59,6 +59,7 @@ const reducer = (state, action) => {
       return {
         ...state,
         status: "finished",
+        score: state.score
       };
     case "restart":
       return {
@@ -82,26 +83,17 @@ const QuizProvider = ({ children }) => {
     { questions, status, index, answer, score, secondsRemaining },
     dispatch,
   ] = useReducer(reducer, initialState);
-  const [loading, setLoading] = useState(true);
+
   const numQuestions = questions.length;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(
-          "https://opentdb.com/api.php?amount=20&category=9&difficulty=medium"
-        );
-        const jsonData = await response.json();
-        dispatch({ type: "dataReceived", payload: jsonData.results });
-        setLoading(false);
-      } catch (error) {
-        dispatch({ type: "dataFailed", payload: error });
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+  useEffect(function () {
+    fetch("http://localhost:7000/questions")
+      .then((res) => res.json())
+      .then((data) => dispatch({ type: "dataReceived", payload: data }))
+      .catch((err) => dispatch({ type: "dataFailed" }));
   }, []);
+
+  console.log(questions);
 
   return (
     <QuizContext.Provider
@@ -113,7 +105,6 @@ const QuizProvider = ({ children }) => {
         score,
         secondsRemaining,
         numQuestions,
-        loading,
 
         dispatch,
       }}
@@ -125,8 +116,8 @@ const QuizProvider = ({ children }) => {
 
 const useQuiz = () => {
   const context = useContext(QuizContext);
-  if (context === undefined)
-    throw new Error("QuizContext was used outside of the QuizProvider");
+  //   if (context === undefined)
+  //     throw new Error("QuizContext was used outside of the QuizProvider");
   return context;
 };
 
